@@ -1,0 +1,54 @@
+# A GitHub release for every version tag (vX.Y.Z), with its CHANGELOG section as notes.
+# Run it by hand (Actions → Release → Run workflow, or `gh workflow run release.yml -f tag=vX.Y.Z`) for a tag
+# pushed before this workflow existed: the notes come from the CHANGELOG of the branch it runs on.
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release, already pushed (vX.Y.Z)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      # a pushed tag: its own tree; a manual run: the branch it runs on (its CHANGELOG has every version)
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: The tag matches .claude/VERSION
+        if: github.event_name == 'push'
+        run: |
+          version=$(tr -d '[:space:]' < .claude/VERSION)
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::tag $TAG but .claude/VERSION is $version"
+            exit 1
+          fi
+
+      - name: Tests
+        run: python3 contributing/tests/run.py
+
+      - name: Release notes from the CHANGELOG
+        run: python3 .github/scripts/release-notes.py "$TAG" > "$RUNNER_TEMP/notes.md"
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --title "jiku flow ${TAG#v}" --notes-file "$RUNNER_TEMP/notes.md"
+          else
+            gh release create "$TAG" --title "jiku flow ${TAG#v}" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+          fi

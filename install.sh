@@ -25,6 +25,20 @@ done
 say() { printf '%s\n' "$*"; }
 fail() { printf 'jiku flow: %s\n' "$*" >&2; exit 1; }
 
+# Download one version into a new folder: a tag (vX.Y.Z), a branch, or the default branch. A fetch, not a
+# clone: `clone --branch` of an annotated tag prints a warning ("... is not a commit").
+download() {
+    local url=$1 ref=$2 dir=$3
+    git init -q "$dir" || return 1
+    if [ -n "$ref" ]; then
+        git -C "$dir" fetch -q --depth 1 "$url" "refs/tags/$ref" 2>/dev/null \
+            || git -C "$dir" fetch -q --depth 1 "$url" "$ref" || return 1
+    else
+        git -C "$dir" fetch -q --depth 1 "$url" HEAD || return 1
+    fi
+    git -C "$dir" -c advice.detachedHead=false checkout -q FETCH_HEAD
+}
+
 # ---------- checks ----------
 command -v git >/dev/null 2>&1 || fail "git is required"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required (3.9 or later)"
@@ -43,7 +57,7 @@ if [ -z "$REF" ]; then
           | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
 fi
 say "Downloading jiku flow ${REF:-(default branch)}..."
-git -c advice.detachedHead=false clone --quiet --depth 1 ${REF:+--branch "$REF"} "$REPO_URL" "$tmp/jiku-flow" || fail "could not download $REPO_URL"
+download "$REPO_URL" "$REF" "$tmp/jiku-flow" || fail "could not download $REPO_URL${REF:+ ($REF)}"
 
 # ---------- install ----------
 python3 "$tmp/jiku-flow/.claude/scripts/jflow.py" --root . install

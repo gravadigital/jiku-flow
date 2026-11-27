@@ -7,6 +7,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-27
+
+### Added
+
+- **A GitHub release for every version tag**, with its CHANGELOG section as notes.
+
+### Fixed
+
+- **The installer and `/jflow-framework-update` no longer print a git warning** ("refs/tags/vX.Y.Z … is
+  not a commit") when they download a version: they fetch the tag instead of cloning it.
+
 ## [1.0.0] - 2026-11-27
 
 First public release.
@@ -44,5 +55,6 @@ First public release.
 - **Engineering defaults** for every product: OpenTelemetry, health endpoints with version and
   dependencies, RFC 9457 errors, graceful shutdown, JUnit reports, an end-to-end test per entry point.
 
-[Unreleased]: https://github.com/gravadigital/jiku-flow/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/gravadigital/jiku-flow/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/gravadigital/jiku-flow/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/gravadigital/jiku-flow/releases/tag/v1.0.0

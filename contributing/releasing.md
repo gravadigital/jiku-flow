@@ -90,17 +90,16 @@ All green. If skills changed since the last release, the simulated sessions in
 
 ```bash
 git add -A && git commit -m "chore: release vX.Y.Z"
-git tag vX.Y.Z
-git push && git push --tags
+git tag -a vX.Y.Z -m "jiku flow X.Y.Z"
+git push --follow-tags
 ```
 
-### 7. Create the GitHub release
+### 7. The GitHub release
 
-Save the CHANGELOG section of the version (without its heading) to a file and use it as the notes:
-
-```bash
-gh release create vX.Y.Z --title "vX.Y.Z" --notes-file notes.md
-```
+Pushing the tag is enough: the [Release workflow](../.github/workflows/release.yml) checks that the tag
+matches `.claude/VERSION`, runs the tests, and creates the release with the CHANGELOG section of the
+version as its notes (`.github/scripts/release-notes.py`). Check it in the repository's Actions tab. If
+it fails, fix the cause, and run it again by hand (Actions → Release → Run workflow, with the tag).
 
 ### 8. Check the install
 

@@ -46,6 +46,20 @@ compare_versions() {
     echo "0"
 }
 
+# Download one version into a new folder: a tag (vX.Y.Z), a branch, or the default branch. A fetch, not a
+# clone: `clone --branch` of an annotated tag prints a warning ("... is not a commit").
+download() {
+    local url=$1 ref=$2 dir=$3
+    git init -q "$dir" || return 1
+    if [ -n "$ref" ]; then
+        git -C "$dir" fetch -q --depth 1 "$url" "refs/tags/$ref" 2>/dev/null \
+            || git -C "$dir" fetch -q --depth 1 "$url" "$ref" || return 1
+    else
+        git -C "$dir" fetch -q --depth 1 "$url" HEAD || return 1
+    fi
+    git -C "$dir" -c advice.detachedHead=false checkout -q FETCH_HEAD
+}
+
 # The latest release (highest vX.Y.Z tag), or the version asked for (vX.Y.Z or a branch)
 clone_remote() {
     local ref=$1
@@ -55,7 +69,7 @@ clone_remote() {
         ref=$(git ls-remote --tags --refs "$REPO_URL" 'v*' 2>/dev/null | sed 's#.*refs/tags/##' \
               | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
     fi
-    if ! git -c advice.detachedHead=false clone --quiet --depth 1 ${ref:+--branch "$ref"} "$REPO_URL" "$TMP_DIR" 2>/dev/null; then
+    if ! download "$REPO_URL" "$ref" "$TMP_DIR"; then
         log_error "Could not download $REPO_URL${ref:+ ($ref)}"
         exit 1
     fi
