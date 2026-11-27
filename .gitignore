@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+
+contributing/sim/node_modules/
+contributing/sim/runs/

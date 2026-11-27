@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+"""Fake `jiku` CLI for the simulator: answers the reads jflow.py makes from a JSON file and records
+every write without sending anything. Never touches a real Jiku.
+
+    FAKE_JIKU_DATA=/path/data.json  PATH=/path/to/fakejiku:$PATH  ...
+
+data.json: {"subject": "u1", "people": [{"id": 1, "userId": "u1", "firstName": "…", "lastName": "…"}],
+            "requirements": [{"id": 9002, "projectId": 900, "title": "…", "description": "…", …}]}
+Writes are appended to $FAKE_JIKU_DATA.writes.jsonl; they are not applied to the data, so a skill that
+reads back what it wrote (a specification it marked ready) will not see it. session.mjs --fake-jiku sets
+both variables. jflow.py still requires ~/.config/jiku/config.{instance}.yaml to exist (any content).
+"""
+
+import json
+import os
+import sys
+
+DATA = os.environ.get("FAKE_JIKU_DATA", "")
+
+
+def load():
+    try:
+        return json.load(open(DATA, encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"requirements": [], "people": []}
+
+
+def filters(args):
+    out = {}
+    for i, a in enumerate(args):
+        if a == "--filter" and i + 1 < len(args):
+            k, _, v = args[i + 1].partition("=")
+            out[k] = v.split(",")
+    return out
+
+
+def main(args):
+    d = load()
+    if not args:
+        return 0
+    if args[0] == "whoami":
+        print(f"identity        person (fake)\nsubject         {d.get('subject', 'u1')}\ninstance        fake")
+        return 0
+    if args[0] == "doctor":
+        print("✓ fake jiku")
+        return 0
+    if args[0] == "query":
+        op, f = args[1], filters(args)
+        if op == "requirements.list":
+            rows = d.get("requirements", [])
+            if "id" in f:
+                rows = [r for r in rows if str(r["id"]) in f["id"]]
+            if "projectId" in f:
+                rows = [r for r in rows if str(r.get("projectId")) in f["projectId"]]
+            if "state" in f:
+                rows = [r for r in rows if r.get("state") in f["state"]]
+        elif op == "people.list":
+            rows = d.get("people", [])
+            if "userId" in f:
+                rows = [p for p in rows if str(p.get("userId")) in f["userId"]]
+        else:
+            rows = []
+        print(json.dumps(rows, ensure_ascii=False))
+        return 0
+    if args[0] == "cmd":
+        method = args[1]
+        payload = sys.stdin.read() if len(args) > 2 and args[2] == "-" else (args[2] if len(args) > 2 else "{}")
+        with open(DATA + ".writes.jsonl", "a", encoding="utf-8") as fh:
+            fh.write(json.dumps({"method": method, "payload": json.loads(payload or "{}"),
+                                 "via": os.environ.get("JIKU_VIA")}, ensure_ascii=False) + "\n")
+        print(json.dumps({"id": 99999}))
+        return 0
+    print(f"fake jiku: unsupported command: {' '.join(args)}", file=sys.stderr)
+    return 2
+
+
+def strip_config(args):
+    """jflow.py always passes `--config <file of the instance>` first: the fake ignores it."""
+    out, skip = [], False
+    for a in args:
+        if skip:
+            skip = False
+            continue
+        if a == "--config":
+            skip = True
+            continue
+        out.append(a)
+    return out
+
+
+if __name__ == "__main__":
+    sys.exit(main(strip_config(sys.argv[1:])))

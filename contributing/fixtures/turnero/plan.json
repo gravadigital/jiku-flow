@@ -1,0 +1,31 @@
+{
+    "parts": [
+        {
+            "title": "Acceso",
+            "blocks": [
+                "ACC"
+            ],
+            "auth": true
+        },
+        {
+            "title": "Cat\u00e1logo y agenda",
+            "blocks": [
+                "CAT",
+                "AGE",
+                "RES",
+                "CAN",
+                "REP",
+                "NOT"
+            ]
+        },
+        {
+            "title": "Procesos",
+            "blocks": [
+                "REC",
+                "AUS",
+                "HIS",
+                "RET"
+            ]
+        }
+    ]
+}

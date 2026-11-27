@@ -1,0 +1,40 @@
+{
+ "parts": [
+  {
+   "title": "Cuenta",
+   "blocks": [
+    "ACC"
+   ],
+   "auth": true,
+   "entities": [
+    "Cuenta",
+    "Sesión",
+    "Link de recuperación"
+   ]
+  },
+  {
+   "title": "Catálogo",
+   "blocks": [
+    "CAT",
+    "PEL"
+   ],
+   "entities": [
+    "Servicio",
+    "Peluquero",
+    "Franja"
+   ]
+  },
+  {
+   "title": "Turnos y agenda",
+   "blocks": [
+    "RES",
+    "MIS",
+    "CAN",
+    "AGE"
+   ],
+   "entities": [
+    "Turno"
+   ]
+  }
+ ]
+}

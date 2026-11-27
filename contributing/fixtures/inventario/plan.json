@@ -1,0 +1,43 @@
+{
+ "parts": [
+  {
+   "title": "Acceso",
+   "blocks": [
+    "ACC",
+    "NOT"
+   ],
+   "auth": true,
+   "entities": [
+    "Cuenta"
+   ]
+  },
+  {
+   "title": "Equipos",
+   "blocks": [
+    "EQU"
+   ],
+   "entities": [
+    "Equipo"
+   ]
+  },
+  {
+   "title": "Préstamos",
+   "blocks": [
+    "PRE",
+    "RET"
+   ],
+   "entities": [
+    "Préstamo"
+   ]
+  },
+  {
+   "title": "Vencimientos",
+   "blocks": [
+    "VEN"
+   ],
+   "entities": [
+    "Aviso programado"
+   ]
+  }
+ ]
+}

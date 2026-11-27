@@ -1,0 +1,9 @@
+{
+  "name": "jiku-flow-sim",
+  "private": true,
+  "type": "module",
+  "description": "Simulator for interactive jiku flow skills: drives an Agent SDK session and answers it with a simulated user",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.296"
+  }
+}

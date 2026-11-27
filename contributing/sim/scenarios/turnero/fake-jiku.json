@@ -1,0 +1,9 @@
+{"subject": "u-lider",
+ "people": [{"id": 7, "userId": "u-lider", "firstName": "Ana", "lastName": "Equipo"},
+            {"id": 8, "userId": "u-cliente", "firstName": "Marta", "lastName": "Consultorio"}],
+ "requirements": [
+  {"id": 9003, "projectId": 900, "title": "Cancelar aunque llegue tarde y avisos por SMS", "type": "mejora", "priority": "media", "state": "analisis", "visibilityLevel": "public", "createdAt": "2026-11-06T10:00:00Z",
+   "description": "Muchos clientes llegan tarde y nos llaman para cancelar porque el link ya no funciona. Quiero que puedan cancelar desde el link hasta una hora después de la hora del turno. También quiero que el recordatorio les llegue por SMS además del email.",
+   "comments": [{"id": 1, "body": "Lo del SMS es lo más importante para nosotros, mucha gente no lee el email.", "authorId": "u-cliente", "createdAt": "2026-11-06T10:05:00Z"}],
+   "project": {"id": 900, "name": "Turnero"}}
+ ]}

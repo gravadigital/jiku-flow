@@ -1,0 +1,39 @@
+{
+ "parts": [
+  {
+   "title": "Clientes y tokens de API",
+   "blocks": [
+    "ACC"
+   ],
+   "auth": true,
+   "entities": [
+    "Cliente",
+    "Token de API"
+   ]
+  },
+  {
+   "title": "Destinos",
+   "blocks": [
+    "DES"
+   ],
+   "entities": [
+    "Destino",
+    "Suscripción"
+   ]
+  },
+  {
+   "title": "Eventos, entregas, historial y retención",
+   "blocks": [
+    "EVE",
+    "ENT",
+    "HIS",
+    "RET"
+   ],
+   "entities": [
+    "Evento",
+    "Entrega",
+    "Intento"
+   ]
+  }
+ ]
+}
